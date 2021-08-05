@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'api.dart';
+
+import 'news_card.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -23,8 +26,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int index = 0;
+
   @override
   Widget build(BuildContext context) {
+    getArticles();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -65,7 +70,34 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: index,
         children: [
-          NewsCard(link: "", title: "article1"),
+          FutureBuilder<List>(
+              future: getArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: NewsCard(
+                          link: snapshot.data![index]['url'],
+                          description: snapshot.data![index]['description'],
+                          imageUrl: snapshot.data![index]['urlToImage'],
+                          title: snapshot.data![index]['title'],
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Something wen wrong"),
+                  );
+                }
+
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }),
           NewsCard(link: "", title: "article2"),
         ],
       ),
@@ -87,68 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.save,
             ),
             label: "Saved",
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class NewsCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String imageUrl;
-  final String link;
-  NewsCard({
-    this.description =
-        "sjhciqsd icj icoqsudj coiqd hcoqsd coqiu qsidu cjisdj cq",
-    this.imageUrl = "https://i.imgflip.com/5i94mn.jpg",
-    required this.link,
-    this.title = "Article Title",
-  });
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Material(
-      borderRadius: BorderRadius.circular(15),
-      clipBehavior: Clip.antiAlias,
-      elevation: 4,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            children: [
-              Image.network(
-                imageUrl,
-                height: size.height * 0.33,
-                width: size.width,
-                fit: BoxFit.cover,
-              ),
-              Positioned(
-                bottom: 10,
-                left: 10,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    color: Colors.pink,
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Text(description),
           ),
         ],
       ),
