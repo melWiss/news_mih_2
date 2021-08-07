@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'api.dart';
 
+import 'articles_list.dart';
 import 'news_card.dart';
+import 'news_model.dart';
+import 'db.dart' as db;
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -70,23 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: index,
         children: [
-          FutureBuilder<List>(
+          FutureBuilder<List<NewsModel>>(
               future: getArticles(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: NewsCard(
-                          link: snapshot.data![index]['url'],
-                          description: snapshot.data![index]['description'],
-                          imageUrl: snapshot.data![index]['urlToImage'],
-                          title: snapshot.data![index]['title'],
-                        ),
-                      );
-                    },
+                  return ListViewArticles(
+                    articles: snapshot.data!,
                   );
                 } else if (snapshot.hasError) {
                   return Center(
@@ -98,7 +90,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(),
                 );
               }),
-          NewsCard(link: "", title: "article2"),
+          FutureBuilder<List<NewsModel>>(
+              future: db.getArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListViewArticles(
+                    articles: snapshot.data!,
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Something wen wrong"),
+                  );
+                }
+
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

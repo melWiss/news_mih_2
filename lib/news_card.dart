@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:news_mih_2/news_details.dart';
 
+import 'news_model.dart';
+
 class NewsCard extends StatelessWidget {
-  final String? title;
-  final String? description;
-  final String? imageUrl;
-  final String? link;
-  NewsCard({
-    this.description =
-        "sjhciqsd icj icoqsudj coiqd hcoqsd coqiu qsidu cjisdj cq",
-    this.imageUrl = "https://i.imgflip.com/5i94mn.jpg",
-    required this.link,
-    this.title = "Article Title",
-  });
+  final NewsModel newsModel;
+  NewsCard({required this.newsModel});
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -20,12 +13,7 @@ class NewsCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) {
-            return NewsDetails(
-              link: link ?? 'some link',
-              details: description ?? 'some description',
-              imageUrl: imageUrl ?? "https://i.imgflip.com/5i94mn.jpg",
-              title: title ?? 'some title',
-            );
+            return NewsDetails(newsModel: newsModel);
           },
         ));
       },
@@ -40,7 +28,9 @@ class NewsCard extends StatelessWidget {
             Stack(
               children: [
                 Image.network(
-                  imageUrl ?? "https://i.imgflip.com/5i94mn.jpg",
+                  newsModel.urlToImage!.isEmpty
+                      ? "https://i.imgflip.com/5i94mn.jpg"
+                      : newsModel.urlToImage!,
                   height: size.height * 0.33,
                   width: size.width,
                   fit: BoxFit.cover,
@@ -54,7 +44,7 @@ class NewsCard extends StatelessWidget {
                       color: Colors.pink,
                       padding: EdgeInsets.all(5),
                       child: Text(
-                        title ?? 'some title',
+                        newsModel.title ?? 'some title',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -68,7 +58,7 @@ class NewsCard extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(8),
-              child: Text(description ?? 'some description'),
+              child: Text(newsModel.description ?? 'some description'),
             ),
           ],
         ),
