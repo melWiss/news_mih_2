@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+import 'db.dart' as db;
+import 'news_model.dart';
 
 class NewsDetails extends StatelessWidget {
   const NewsDetails({
-    this.details = "",
-    this.imageUrl =
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt9PB1rUXNpra-kd0tRLsnx9jN0WHJyh1ACA&usqp=CAU",
-    required this.link,
-    this.title = "",
+    required this.newsModel,
   });
-  final String title;
-  final String imageUrl;
-  final String link;
-  final String details;
+  final NewsModel newsModel;
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +16,25 @@ class NewsDetails extends StatelessWidget {
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
         title: Text(
-          title,
+          newsModel.title ?? "",
           style: TextStyle(color: Colors.blue),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              db.deleteArticle(newsModel.url).then((value) {
+                if (value) Navigator.of(context).pop();
+              });
+            },
+            icon: Icon(Icons.delete),
+          ),
+          IconButton(
+            onPressed: () {
+              db.insertArticle(newsModel);
+            },
+            icon: Icon(Icons.save),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -36,7 +47,7 @@ class NewsDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 clipBehavior: Clip.antiAlias,
                 child: Image.network(
-                  imageUrl,
+                  newsModel.urlToImage ?? "",
                   height: size.height * 0.45,
                   width: size.width,
                   fit: BoxFit.cover,
@@ -46,7 +57,7 @@ class NewsDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                details,
+                newsModel.description ?? "",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
