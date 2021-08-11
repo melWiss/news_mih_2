@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:news_mih_2/state.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'db.dart' as db;
 import 'news_model.dart';
 
-class NewsDetails extends StatelessWidget {
+class NewsDetails extends StatefulWidget {
   const NewsDetails({
     required this.newsModel,
   });
   final NewsModel newsModel;
 
+  @override
+  _NewsDetailsState createState() => _NewsDetailsState();
+}
+
+class _NewsDetailsState extends State<NewsDetails> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -16,23 +23,23 @@ class NewsDetails extends StatelessWidget {
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
         title: Text(
-          newsModel.title ?? "",
+          widget.newsModel.title ?? "",
           style: TextStyle(color: Colors.blue),
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              db.deleteArticle(newsModel.url).then((value) {
-                if (value) Navigator.of(context).pop();
-              });
+            onPressed: () async {
+              if (await db.checkArticleExistence(widget.newsModel.url)) {
+                newsState.deleteArticle(widget.newsModel);
+                Navigator.of(context).pop();
+              } else {
+                newsState.insertArticle(widget.newsModel);
+                setState(() {});
+              }
             },
-            icon: Icon(Icons.delete),
-          ),
-          IconButton(
-            onPressed: () {
-              db.insertArticle(newsModel);
-            },
-            icon: Icon(Icons.save),
+            icon: newsState.checkExistence(widget.newsModel.url)
+                ? Icon(Icons.delete)
+                : Icon(Icons.save),
           ),
         ],
       ),
@@ -47,7 +54,7 @@ class NewsDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 clipBehavior: Clip.antiAlias,
                 child: Image.network(
-                  newsModel.urlToImage ?? "",
+                  widget.newsModel.urlToImage ?? "",
                   height: size.height * 0.45,
                   width: size.width,
                   fit: BoxFit.cover,
@@ -57,7 +64,7 @@ class NewsDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                newsModel.description ?? "",
+                widget.newsModel.description ?? "",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -67,7 +74,9 @@ class NewsDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  launch(widget.newsModel.url);
+                },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_mih_2/state.dart';
 import 'api.dart';
 
 import 'articles_list.dart';
@@ -73,8 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: index,
         children: [
-          FutureBuilder<List<NewsModel>>(
-              future: getArticles(),
+          StreamBuilder<List<NewsModel>?>(
+              stream: newsState.listNewsApiStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListViewArticles(
@@ -90,8 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(),
                 );
               }),
-          FutureBuilder<List<NewsModel>>(
-              future: db.getArticles(),
+          StreamBuilder<List<NewsModel>?>(
+              stream: newsState.listNewsDbStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListViewArticles(
