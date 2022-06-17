@@ -30,7 +30,7 @@ Future<bool> checkArticleExistence(String url) async {
   var listNewsModel = await getArticles();
   if (listNewsModel.isEmpty) return false;
   try {
-    var verif = listNewsModel.singleWhere((element) => element.url == url);
+    listNewsModel.singleWhere((element) => element.url == url);
     return true;
   } catch (e) {
     print(e.toString());

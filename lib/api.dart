@@ -11,7 +11,7 @@ Future<List<NewsModel>> getArticles() async {
   );
   //print(response.body);
   var data = jsonDecode(response.body);
-  List articles = data['articles'];
+  // List articles = data['articles'];
   List<NewsModel> articlesModels = List<NewsModel>.generate(
     data['articles'].length,
     (index) => NewsModel.fromMap(

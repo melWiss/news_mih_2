@@ -5,7 +5,7 @@ import 'db.dart' as db;
 import 'package:news_mih_2/news_model.dart';
 
 class NewsStateManagement {
-  List<NewsModel>? _listNewsApi;
+  // List<NewsModel>? _listNewsApi;
   List<NewsModel>? _listNewsDb;
 
   StreamController<List<NewsModel>?> _listNewsApiController =
@@ -29,7 +29,7 @@ class NewsStateManagement {
 
   void getApiArticles() {
     api.getArticles().then((value) {
-      _listNewsApi = value;
+      // _listNewsApi = value;
       _listNewsApiSink.add(value);
     });
   }
@@ -44,7 +44,7 @@ class NewsStateManagement {
   bool checkExistence(String url) {
     if (_listNewsDb!.isEmpty) return false;
     try {
-      var verif = _listNewsDb!.singleWhere((element) => element.url == url);
+      _listNewsDb!.singleWhere((element) => element.url == url);
       return true;
     } catch (e) {
       print(e.toString());
@@ -62,6 +62,11 @@ class NewsStateManagement {
     db.deleteArticle(newsModel.url).then((value) {
       if (value) getDbArticles();
     });
+  }
+
+  dispose() {
+    _listNewsApiController.close();
+    _listNewsDbController.close();
   }
 }
 

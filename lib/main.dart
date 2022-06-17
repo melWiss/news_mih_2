@@ -3,9 +3,9 @@ import 'package:news_mih_2/state.dart';
 import 'api.dart';
 
 import 'articles_list.dart';
-import 'news_card.dart';
+// import 'news_card.dart';
 import 'news_model.dart';
-import 'db.dart' as db;
+// import 'db.dart' as db;
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
